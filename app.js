@@ -7,13 +7,24 @@ require("dotenv").config();
 
 const configuration = new Configuration({
   organization: "org-CjIl4vnLKCaPqr6WGtIhrpQA",
-  apiKey: "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"
+  apiKey: process.env.API_KEY,
+ 
 });
 const openai = new OpenAIApi(configuration);
 
 app.use(bodyParser.json());
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, Content-Length, X-Requested-With"
+    );
+    next();
+  });
 
-app.post("/generate-animal-names", async (req, res) => {
+app.post("/generate-text", async (req, res) => {
+    
   if (!configuration.apiKey) {
     res.status(500).json({
       error: {
@@ -22,22 +33,24 @@ app.post("/generate-animal-names", async (req, res) => {
     });
     return;
   }
-
-  const animal = req.body.animal || "";
-  if (animal.trim().length === 0) {
+ 
+  const text = req.body.text || "";
+  if (text.trim().length === 0) {
     res.status(400).json({
       error: {
-        message: "Please enter a valid animal"
+        message: "Please enter a valid text"
       }
     });
     return;
   }
 
+  const temperature = parseFloat(req.body.temperature) || 0.7;
+
   try {
     const completion = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: generatePrompt(animal),
-      temperature: 0.6
+      model: "text-davinci-002",
+      prompt: text,
+      temperature: temperature
     });
     res.status(200).json({ result: completion.data.choices[0].text });
   } catch (error) {
@@ -54,21 +67,12 @@ app.post("/generate-animal-names", async (req, res) => {
     }
   }
 });
+app.use(express.static("public"));
 
-function generatePrompt(animal) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
-}
-
-const port = process.env.PORT || 3000;
+app.get("/", (req, res) => {
+  res.sendFile(`${__dirname}/public/index.html`);
+});
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
