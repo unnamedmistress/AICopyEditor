@@ -11,7 +11,7 @@
 8. [Tests?](#Tests)
 9. [Questions?](#questions)
 
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/e60Eswp2EmM/0.jpg)](http://www.youtube.com/watch?v=e60Eswp2EmM "Video Title")
+[![IMAGE ALT TEXT](Placeholder)
 
 # Title: A powerful text editor is a software application that provides advanced features for editing, writing and manipulating text. This will turn your sloppy writing into something magical.
 ## Description/Problem Solved 
